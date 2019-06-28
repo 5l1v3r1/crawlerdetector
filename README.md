@@ -4,7 +4,7 @@ Crawler Detector is a Golang package for detecting bots/crawlers/spiders via the
 
 ### Installation
 
-Run `go get github.com/langaner/crawlerdetector`.
+Run `go get github.com/dxas90/crawlerdetector`.
 
 ### Usage
 
