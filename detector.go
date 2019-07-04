@@ -8,6 +8,7 @@ import (
 // CrawlerDetector is crawler detector structure
 type CrawlerDetector struct {
 	Crawlers   *regexp.Regexp
+	Mobiles    *regexp.Regexp
 	Exclusions *regexp.Regexp
 	Matched    []string
 }
@@ -15,9 +16,10 @@ type CrawlerDetector struct {
 // New returns a new initialized CrawlerDetector
 func New() *CrawlerDetector {
 	return &CrawlerDetector{
-		Crawlers: regexp.MustCompile(CombineRegexp(CrawlersList())),
+		Crawlers:   regexp.MustCompile(CombineRegexp(CrawlersList())),
+		Mobiles:    regexp.MustCompile(CombineRegexp(MobilesList())),
 		Exclusions: regexp.MustCompile(CombineRegexp(ExclusionsList())),
-		Matched: []string{},
+		Matched:    []string{},
 	}
 }
 
@@ -27,6 +29,18 @@ func (cd *CrawlerDetector) IsCrawler(userAgent string) bool {
 		return false
 	}
 	cd.Matched = cd.Crawlers.FindAllString(userAgent, -1)
+
+	if len(cd.Matched) != 0 {
+		return true
+	}
+
+	return false
+}
+
+// IsMobile is detect mobile device by user agent
+func (cd *CrawlerDetector) IsMobile(userAgent string) bool {
+
+	cd.Matched = cd.Mobiles.FindAllString(userAgent, -1)
 
 	if len(cd.Matched) != 0 {
 		return true
