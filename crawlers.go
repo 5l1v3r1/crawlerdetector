@@ -1,8 +1,35 @@
 package crawlerdetector
 
+import (
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"gopkg.in/yaml.v2"
+)
+
+// PiwikCrawlersList is list of crawlers/spiders/bots by Piwik
+func PiwikCrawlersList() string {
+	mobiles := make([]Piwik, 1)
+	mobilesFile, err := os.Open("bots.yml")
+	if err != nil { // no file
+		log.Fatal(err.Error())
+	}
+	err = yaml.NewDecoder(mobilesFile).Decode(&mobiles)
+	if err != nil { // failed decode from the file
+		log.Fatal(err.Error())
+	}
+	strs := make([]string, len(mobiles))
+	for i, v := range mobiles {
+		strs[i] = v.String()
+	}
+	return fmt.Sprintf("(%s)", strings.Join(strs, "|"))
+}
+
 // CrawlersList is list of crawlers/spiders/bots
-func CrawlersList() []string {
-	return []string{
+func CrawlersList() string {
+	return fmt.Sprintf("(%s)", strings.Join([]string{
 		"007ac9 Crawler",
 		"008s\\/",
 		"192\\.comAgent",
@@ -1583,5 +1610,5 @@ func CrawlersList() []string {
 		"ZumBot",
 		"ZuperlistBot\\/",
 		"ZyBorg",
-	}
+	}, "|"))
 }

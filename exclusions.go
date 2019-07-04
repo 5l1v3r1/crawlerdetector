@@ -1,9 +1,13 @@
 package crawlerdetector
 
+import (
+	"fmt"
+	"strings"
+)
+
 // ExclusionsList is list of exclusions
-func ExclusionsList() []string {
-	return []string{
-		"Safari.[\\d\\.]*",
+func ExclusionsList() string {
+	return fmt.Sprintf("(%s)", strings.Join([]string{"Safari.[\\d\\.]*",
 		"Firefox.[\\d\\.]*",
 		"Chrome.[\\d\\.]*",
 		"Chromium.[\\d\\.]*",
@@ -49,5 +53,5 @@ func ExclusionsList() []string {
 		"; IDbot",
 		"; ID bot",
 		"; POWER BOT",
-	}
+	}, "|"))
 }

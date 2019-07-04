@@ -2,8 +2,17 @@ package crawlerdetector
 
 import (
 	"regexp"
-	"strings"
 )
+
+// Piwik struct to parse the yml
+type Piwik struct {
+	Regex string `yaml:"regex"`
+}
+
+// String function to dump the Regex
+func (m *Piwik) String() string {
+	return m.Regex
+}
 
 // CrawlerDetector is crawler detector structure
 type CrawlerDetector struct {
@@ -16,9 +25,9 @@ type CrawlerDetector struct {
 // New returns a new initialized CrawlerDetector
 func New() *CrawlerDetector {
 	return &CrawlerDetector{
-		Crawlers:   regexp.MustCompile(CombineRegexp(CrawlersList())),
-		Mobiles:    regexp.MustCompile(CombineRegexp(MobilesList())),
-		Exclusions: regexp.MustCompile(CombineRegexp(ExclusionsList())),
+		Crawlers:   regexp.MustCompile(CrawlersList()),
+		Mobiles:    regexp.MustCompile(MobilesList()),
+		Exclusions: regexp.MustCompile(ExclusionsList()),
 		Matched:    []string{},
 	}
 }
@@ -58,11 +67,6 @@ func (cd *CrawlerDetector) IsExclusion(userAgent string) bool {
 	}
 
 	return false
-}
-
-// CombineRegexp is build regex from givement patterns list
-func CombineRegexp(patterns []string) string {
-	return "(" + strings.Join(patterns, "|") + ")"
 }
 
 // GetMatched is getter of matched result
