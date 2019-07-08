@@ -1,7 +1,6 @@
 package crawlerdetector
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -24,12 +23,12 @@ func PiwikCrawlersList() string {
 	for i, v := range mobiles {
 		strs[i] = v.String()
 	}
-	return fmt.Sprintf("(%s)", strings.Join(strs, "|"))
+	return "(" + strings.Join(strs, "|") + ")"
 }
 
 // CrawlersList is list of crawlers/spiders/bots
 func CrawlersList() string {
-	return fmt.Sprintf("(%s)", strings.Join([]string{
+	return "(" + strings.Join([]string{
 		"007ac9 Crawler",
 		"008s\\/",
 		"192\\.comAgent",
@@ -1610,5 +1609,5 @@ func CrawlersList() string {
 		"ZumBot",
 		"ZuperlistBot\\/",
 		"ZyBorg",
-	}, "|"))
+	}, "|") + ")"
 }

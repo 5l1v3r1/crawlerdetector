@@ -1,7 +1,6 @@
 package crawlerdetector
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -24,12 +23,12 @@ func PiwikMobilesList() string {
 	for i, v := range mobiles {
 		strs[i] = v.String()
 	}
-	return fmt.Sprintf("(%s)", strings.Join(strs, "|"))
+	return "(" + strings.Join(strs, "|") + ")"
 }
 
 // MobileLists is list of most used mobiles
 func MobilesList() string {
-	return fmt.Sprintf("(%s)", strings.Join([]string{
+	return "(" + strings.Join([]string{
 		"4Good[ _]|(?:4Good)?(S450m [43]G|S555m 4G|S501m 3G|T700i_3G|Light A103)",
 		"733TPC",
 		"(?:8312D|G(60[25]|70[3568]G?|785|803)|N83(?:-2cpu)?|N91) Build",
@@ -482,5 +481,5 @@ func MobilesList() string {
 		"ZTE|AxonPhone|([a-z0-9]+)_USA_Cricket|(?:Blade (?:L110|L[2357]|L7A|S6|V[6789]|V8Q|V8 SE|V9 VITA|X7|A(310|460|465|475|520|530|602)|V580)|N9[15]8St|NX(?:403A|406E|40[X2]|507J|503A|505J|506J|508J|510J|511J|513J|521J|523J_V1|529J|531J|541J|549J|551J|563J|569[HJ]|573J|575J|591J|595J|597J|601J|907J)|N951[0579]|N9180|N9101|N913[67]|N952[01]|N9560|N9810|N799D|[UV]9180|[UV]9815|Z(?:233V|331|667T|768G|792|81[25]|82[08]|83[12359]|85[125]|851M|(557|717|798|836|861|916)BL|986DL|(232|718|828)TL|(233|353|558|717|799|837|862|899|917|963)VL|955A|95[678]|965|97[018]|98[1237]|986U|999)|Apex2|G (LTE|Lux)|Vec)[);/ ]|KIS II Max|Kis 3",
 		"Zuum[ _-]|COVET|MAGNO|ONIX S|STEDI|STELLAR Z",
 		"ZYNC|(Cloud Z5|Z1000|Z18|Z99 Dual Core|Z99[_ ][23]G|Z99|Z900[_ ]Plus|Z909|Z930[+]|Z930)",
-	}, "|"))
+	}, "|") + ")"
 }
