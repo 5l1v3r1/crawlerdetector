@@ -39,10 +39,11 @@ func New() *CrawlerDetector {
 	return crw
 }
 
-// Parse is to  perform all operations by user agent
+// Parse is to perform all operations by user agent
 func (cd *CrawlerDetector) Parse(userAgent string) *CrawlerDetector {
 	isExclusion := cd.Exclusions.ReplaceAllString(userAgent, "")
 	cd.Browser = (len(isExclusion) == 0)
+	cd.Crawler = false
 
 	cd.Matched = cd.Mobiles.FindAllString(userAgent, -1)
 	cd.Mobile = (len(cd.Matched) != 0)
@@ -52,6 +53,13 @@ func (cd *CrawlerDetector) Parse(userAgent string) *CrawlerDetector {
 		cd.Crawler = (len(cd.Matched) != 0)
 	}
 
+	return cd
+}
+
+// ParseUnsafe is to perform all browser and mobile operations by user agent but if not is a browser we asume that is a crawler
+func (cd *CrawlerDetector) ParseUnsafe(userAgent string) *CrawlerDetector {
+	cd.IsCrawler(userAgent)
+	cd.IsMobile(userAgent)
 	return cd
 }
 

@@ -3,15 +3,19 @@ package crawlerdetector
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
-// MobileLists is list of most used mobiles
+// PiwikMobilesList is list of most used mobiles
 func PiwikMobilesList() string {
+	_, file, _, _ := runtime.Caller(0)
+	apppath, _ := filepath.Abs(filepath.Dir(file))
 	mobiles := make([]Piwik, 1)
-	mobilesFile, err := os.Open("mobiles.yml")
+	mobilesFile, err := os.Open(apppath + "/mobiles.yml")
 	if err != nil { // no file
 		log.Fatal(err.Error())
 	}
@@ -26,7 +30,7 @@ func PiwikMobilesList() string {
 	return "(" + strings.Join(strs, "|") + ")"
 }
 
-// MobileLists is list of most used mobiles
+// MobilesList is list of most used mobiles
 func MobilesList() string {
 	return "(" + strings.Join([]string{
 		"4Good[ _]|(?:4Good)?(S450m [43]G|S555m 4G|S501m 3G|T700i_3G|Light A103)",

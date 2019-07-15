@@ -3,6 +3,8 @@ package crawlerdetector
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -10,8 +12,10 @@ import (
 
 // PiwikCrawlersList is list of crawlers/spiders/bots by Piwik
 func PiwikCrawlersList() string {
+	_, file, _, _ := runtime.Caller(0)
+	apppath, _ := filepath.Abs(filepath.Dir(file))
 	mobiles := make([]Piwik, 1)
-	mobilesFile, err := os.Open("bots.yml")
+	mobilesFile, err := os.Open(apppath + "/bots.yml")
 	if err != nil { // no file
 		log.Fatal(err.Error())
 	}
