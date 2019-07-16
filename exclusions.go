@@ -4,6 +4,33 @@ import (
 	"strings"
 )
 
+// ShortExclusionsList is list of exclusions
+func ShortExclusionsList() string {
+	return "(" + strings.Join([]string{
+		"Safari.[\\d\\.]*",
+		"Firefox.[\\d\\.]*",
+		"Chrome.[\\d\\.]*",
+		"Chromium.[\\d\\.]*",
+		"MSIE.[\\d\\.]",
+		"Opera\\/[\\d\\.]*",
+		"Mozilla.[\\d\\.]*",
+		"AppleWebKit.[\\d\\.]*",
+		"Trident.[\\d\\.]*",
+		"Windows NT.[\\d\\.]*",
+		"Android [\\d\\.]*",
+		"Macintosh.",
+		"Ubuntu",
+		"Linux",
+		"rv:[\\d\\.]*",
+		"Version.[\\d\\.]*",
+		"WOW64",
+		"Win64",
+		"iPod",
+		"Opera",
+		"(like )?Gecko(.[\\d\\.]*)?",
+	}, "|") + ")"
+}
+
 // ExclusionsList is list of exclusions
 func ExclusionsList() string {
 	return "(" + strings.Join([]string{

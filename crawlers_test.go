@@ -3,83 +3,21 @@ package crawlerdetector
 import (
 	"log"
 	"os"
-	"path/filepath"
-	"runtime"
-	"strings"
+	"regexp"
+	"testing"
 
-	"gopkg.in/yaml.v2"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-// PiwikCrawlersList is list of crawlers/spiders/bots by Piwik
-func PiwikCrawlersList() string {
-	_, file, _, _ := runtime.Caller(0)
-	apppath, _ := filepath.Abs(filepath.Dir(file))
-	bots := make([]Piwik, 1)
-	botsFile, err := os.Open(apppath + "/bots.yml")
-	if err != nil { // no file
-		log.Fatal(err.Error())
-	}
-	err = yaml.NewDecoder(botsFile).Decode(&bots)
-	if err != nil { // failed decode from the file
-		log.Fatal(err.Error())
-	}
-	strs := make([]string, len(bots))
-	for i, v := range bots {
-		strs[i] = v.String()
-	}
-	return "(" + strings.Join(strs, "|") + ")"
-}
-
-// ShortCrawlersList is list of crawlers/spiders/bots
-func ShortCrawlersList() string {
-	return "(" + strings.Join([]string{
-		"[a|A]nalyzer",
-		"axios\\/",
-		"[b|B]ing",
-		"[d|D]ownload",
-		"[c|C]loudFront",
-		"([a-z0-9\\-_]*)?(ads|[b|B][o|0]t|[c|C]rawler|archiver|transcoder|[s|S]pider|uptime|[v|V]alidator|[f|F]etch(er)?|[c|C]rawl|[c|C]heck(er)?)",
-		"(A6-Indexer|nuhk|TsolCrawler|Yammybot|Openbot|Gulper Web Bot|grub-client|Download Demon|SearchExpress|Microsoft URL Control|borg|altavista|dataminr.com|tweetedtimes.com|TrendsmapResolver|teoma|blitzbot|oegp|furlbot|http%20client|polybot|htdig|mogimogi|larbin|scrubby|searchsight|seekbot|semanticdiscovery|snappy|vortex(Build)?|zeal|fast-webcrawler|converacrawler|dataparksearch|findlinks|BrowserMob|HttpMonitor|ThumbShotsBot|URL2PNG|ZooShot|GomezA|Google SketchUp|Read%20Later|Minimo|RackspaceBot)",
-		"[y|Y]andex",
-		"[g|G]enerator",
-		"[s|S]earch",
-		"SEO",
-		"[a|A]gent",
-		"[b|B]ench",
-		"[m|M]onitor(ing)?",
-		"[l|L]ink",
-		"[p|P]roxy",
-		"[p|P]ing(dom)?",
-		"[p|P]ostman",
-		"[r|R]equest([2|er])?",
-		"[s|S]ite",
-		"[s|S]can",
-		"[w|W]get",
-		"[w|W]ord(press)?",
-		"[w|W]orm",
-		"curl*",
-		"([A-z0-9]*)-Lighthouse",
-	}, "|") + ")"
-}
-
-// CrawlersList is list of crawlers/spiders/bots
-func CrawlersList() string {
-	return "(" + strings.Join([]string{
+func TestShortCrawlersList(t *testing.T) {
+	tester := regexp.MustCompile(ShortCrawlersList())
+	testCrawlers := []string{
 		"007ac9 Crawler",
-		"008s\\/",
 		"192\\.comAgent",
-		"2ip\\.ru",
 		"360Spider",
 		"360Spider(-Image|-Video)?",
-		"404checker",
-		"404enemy",
-		"80legs",
-		"a3logics\\.in",
 		"A6-Indexer",
 		"(A6-Indexer|nuhk|TsolCrawler|Yammybot|Openbot|Gulper Web Bot|grub-client|Download Demon|SearchExpress|Microsoft URL Control|borg|altavista|dataminr.com|tweetedtimes.com|TrendsmapResolver|teoma|blitzbot|oegp|furlbot|http%20client|polybot|htdig|mogimogi|larbin|scrubby|searchsight|seekbot|semanticdiscovery|snappy|vortex(Build)?|zeal|fast-webcrawler|converacrawler|dataparksearch|findlinks|BrowserMob|HttpMonitor|ThumbShotsBot|URL2PNG|ZooShot|GomezA|Google SketchUp|Read%20Later|Minimo|RackspaceBot)",
-		"Abonti",
-		"Aboundex",
-		"aboutthedomain",
 		"acapbot",
 		"Accoona-AI-Agent",
 		"acoon",
@@ -1645,5 +1583,33 @@ func CrawlersList() string {
 		"ZumBot",
 		"ZuperlistBot\\/",
 		"ZyBorg",
-	}, "|") + ")"
+	}
+	tmpfile, err := os.OpenFile("/tmp/aki.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	btmpfile, err := os.OpenFile("/tmp/bki.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, test := range testCrawlers {
+		t.Run(test, func(tt *testing.T) {
+			response := tester.FindAllString(test, -1)
+			if len(response) == 0 {
+				if _, err := tmpfile.Write([]byte(test + "\n")); err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				if _, err := btmpfile.Write([]byte(test + "\n")); err != nil {
+					log.Fatal(err)
+				}
+			}
+			Convey("Subject: Test ShortCrawlersList response\n", t, func() {
+				Convey("Should Be a bot", func() {
+					So(len(response), ShouldNotEqual, 0)
+				})
+			})
+		},
+		)
+	}
 }

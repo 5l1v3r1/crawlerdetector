@@ -2,10 +2,14 @@ package crawlerdetector
 
 import (
 	"regexp"
+	"sync"
 )
+
+var w sync.WaitGroup
 
 // Piwik struct to parse the yml
 type Piwik struct {
+	Name  string `yaml:"name"`
 	Regex string `yaml:"regex"`
 }
 
@@ -39,27 +43,65 @@ func New() *CrawlerDetector {
 	return crw
 }
 
+// NewPiwik returns a new initialized CrawlerDetector from Piwik
+func NewPiwik() *CrawlerDetector {
+	crw := &CrawlerDetector{
+		Crawlers:   regexp.MustCompile(PiwikCrawlersList()),
+		Mobiles:    regexp.MustCompile(PiwikMobilesList()),
+		Exclusions: regexp.MustCompile(ShortExclusionsList()),
+		Matched:    []string{},
+		Browser:    false,
+		Mobile:     false,
+		Crawler:    false,
+	}
+	return crw
+}
+
+// NewShort returns a new basic initialized CrawlerDetector
+func NewShort() *CrawlerDetector {
+	crw := &CrawlerDetector{
+		Crawlers:   regexp.MustCompile(ShortCrawlersList()),
+		Mobiles:    regexp.MustCompile(ShortMobilesList()),
+		Exclusions: regexp.MustCompile(ShortExclusionsList()),
+		Matched:    []string{},
+		Browser:    false,
+		Mobile:     false,
+		Crawler:    false,
+	}
+	return crw
+}
+
 // Parse is to perform all operations by user agent
 func (cd *CrawlerDetector) Parse(userAgent string) *CrawlerDetector {
-	isExclusion := cd.Exclusions.ReplaceAllString(userAgent, "")
-	cd.Browser = (len(isExclusion) == 0)
-	cd.Crawler = false
-
-	cd.Matched = cd.Mobiles.FindAllString(userAgent, -1)
-	cd.Mobile = (len(cd.Matched) != 0)
-
-	if !cd.Browser {
-		cd.Matched = cd.Crawlers.FindAllString(userAgent, -1)
-		cd.Crawler = (len(cd.Matched) != 0)
-	}
-
+	w.Add(3)
+	go func() {
+		cd.Browser = (len(cd.Exclusions.ReplaceAllString(userAgent, "")) == 0)
+		defer w.Done()
+	}()
+	go func() {
+		cd.Mobile = (len(cd.Mobiles.FindAllString(userAgent, -1)) != 0)
+		defer w.Done()
+	}()
+	go func() {
+		cd.Crawler = (len(cd.Crawlers.FindAllString(userAgent, -1)) != 0)
+		defer w.Done()
+	}()
+	w.Wait()
 	return cd
 }
 
 // ParseUnsafe is to perform all browser and mobile operations by user agent but if not is a browser we asume that is a crawler
 func (cd *CrawlerDetector) ParseUnsafe(userAgent string) *CrawlerDetector {
-	cd.IsCrawler(userAgent)
-	cd.IsMobile(userAgent)
+	w.Add(2)
+	go func() {
+		cd.IsCrawler(userAgent)
+		defer w.Done()
+	}()
+	go func() {
+		cd.IsMobile(userAgent)
+		defer w.Done()
+	}()
+	w.Wait()
 	return cd
 }
 
