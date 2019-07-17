@@ -12,16 +12,17 @@ import (
 
 // PiwikMobilesList is list of most used mobiles
 func PiwikMobilesList() string {
+	mobiles := make([]Piwik, 1)
+	yaml.Unmarshal(mobilesConfig, &mobiles)
 	_, file, _, _ := runtime.Caller(0)
 	apppath, _ := filepath.Abs(filepath.Dir(file))
-	mobiles := make([]Piwik, 1)
 	mobilesFile, err := os.Open(apppath + "/mobiles.yml")
 	if err != nil { // no file
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 	err = yaml.NewDecoder(mobilesFile).Decode(&mobiles)
 	if err != nil { // failed decode from the file
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 	strs := make([]string, len(mobiles))
 	for i, v := range mobiles {

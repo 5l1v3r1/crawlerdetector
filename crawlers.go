@@ -12,16 +12,17 @@ import (
 
 // PiwikCrawlersList is list of crawlers/spiders/bots by Piwik
 func PiwikCrawlersList() string {
+	bots := make([]Piwik, 1)
+	yaml.Unmarshal(botConfig, &bots)
 	_, file, _, _ := runtime.Caller(0)
 	apppath, _ := filepath.Abs(filepath.Dir(file))
-	bots := make([]Piwik, 1)
 	botsFile, err := os.Open(apppath + "/bots.yml")
 	if err != nil { // no file
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 	err = yaml.NewDecoder(botsFile).Decode(&bots)
 	if err != nil { // failed decode from the file
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 	strs := make([]string, len(bots))
 	for i, v := range bots {
