@@ -9,8 +9,8 @@ var w sync.WaitGroup
 
 // Piwik struct to parse the yml
 type Piwik struct {
-	Name  string `yaml:"name"`
-	Regex string `yaml:"regex"`
+	Name  string `json:"name"`
+	Regex string `json:"regex"`
 }
 
 // String function to dump the Regex

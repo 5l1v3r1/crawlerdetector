@@ -1,27 +1,16 @@
 package crawlerdetector
 
 import (
+	"encoding/json"
 	"log"
-	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
-
-	"gopkg.in/yaml.v2"
 )
 
 // PiwikCrawlersList is list of crawlers/spiders/bots by Piwik
 func PiwikCrawlersList() string {
 	bots := make([]Piwik, 1)
-	yaml.Unmarshal(botConfig, &bots)
-	_, file, _, _ := runtime.Caller(0)
-	apppath, _ := filepath.Abs(filepath.Dir(file))
-	botsFile, err := os.Open(apppath + "/bots.yml")
-	if err != nil { // no file
-		log.Println(err.Error())
-	}
-	err = yaml.NewDecoder(botsFile).Decode(&bots)
-	if err != nil { // failed decode from the file
+	err := json.Unmarshal(botConfig, &bots)
+	if err != nil { // failed decode the data
 		log.Println(err.Error())
 	}
 	strs := make([]string, len(bots))

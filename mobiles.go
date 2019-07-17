@@ -1,27 +1,16 @@
 package crawlerdetector
 
 import (
+	"encoding/json"
 	"log"
-	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
-
-	"gopkg.in/yaml.v2"
 )
 
 // PiwikMobilesList is list of most used mobiles
 func PiwikMobilesList() string {
 	mobiles := make([]Piwik, 1)
-	yaml.Unmarshal(mobilesConfig, &mobiles)
-	_, file, _, _ := runtime.Caller(0)
-	apppath, _ := filepath.Abs(filepath.Dir(file))
-	mobilesFile, err := os.Open(apppath + "/mobiles.yml")
-	if err != nil { // no file
-		log.Println(err.Error())
-	}
-	err = yaml.NewDecoder(mobilesFile).Decode(&mobiles)
-	if err != nil { // failed decode from the file
+	err := json.Unmarshal(mobilesConfig, &mobiles)
+	if err != nil { // failed decode the data
 		log.Println(err.Error())
 	}
 	strs := make([]string, len(mobiles))
